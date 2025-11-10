@@ -1,4 +1,3 @@
-# numpy-neural-network-image-classifier
 This project is about classifying and identifying 
 monsters in the game Logres of Swords and Sorcery. 
 Running main.py will start model training. The result 
