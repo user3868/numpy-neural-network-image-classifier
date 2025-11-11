@@ -26,9 +26,12 @@ This is a binary image classifier implemented using `numpy`. It detects whether 
 numpy-neural-network-image-classifier/
 ├── main.py                  # 训练、可视化与推理入口 | Training, plots, inference
 ├── screenshotsToImages.py   # 数据集切片与缩放 | Screenshot tiling and resizing
+├── label_gui.py             # 可视化标注工具（勾选→复制并加前缀）| GUI labeling tool
+├── label_classification.py  # 统计并按前缀分类到子目录 | Count and split by prefix
 ├── labelImage/              # 训练数据目录（文件名前缀决定标签）| Training images (filename prefix → label)
 ├── label_0/                 # 评估用负类图片 | Evaluation negatives
 ├── label_1/                 # 评估用正类图片 | Evaluation positives
+├── similarityImage/         # 供 GUI 选择的候选图片（可选）| Candidate images for GUI (optional)
 ├── Screenshots/             # 原始截图 | Raw screenshots
 ├── LICENSE                  # MIT 许可 | MIT License
 └── README.md                # 项目文档 | This file
@@ -70,6 +73,57 @@ python screenshotsToImages.py
 - 非 `1_` 开头 → 默认负类（目标怪物不存在），可以使用 `0_` 前缀以示区分
 
 4) 评估集（可选）：将样本分别放入 `label_1/`（正类）与 `label_0/`（负类），用于批量评估 Precision/Recall。
+
+---
+
+## 图像标注 | Image Labeling
+
+方式 A：直接改文件名前缀 | Method A: rename by prefix
+
+- 将图片放入 `labelImage/`，以 `1_`（正类）或 `0_`（负类）作为文件名前缀。
+
+方式 B：使用 GUI 标注工具 | Method B: use the GUI tool
+
+1) 准备候选图片：将需要筛选的图片放入 `similarityImage/`（或你希望标注的任意目录）。
+
+2) 运行标注工具：
+
+```
+python label_gui.py
+```
+
+- 如需更改来源/目标目录与前缀，在 `label_gui.py` 的 `main()` 中修改：
+
+```
+source_folder = 'similarityImage'  # 候选图片目录
+dest_folder = 'labelImage'         # 复制目标目录
+prefix = '0'                       # 复制时添加到文件名前的前缀（例如 '1' 或 '0'）
+```
+
+- 用法：
+  - 界面中滚动浏览缩略图，勾选需要复制的图片。
+  - 点击 `Label` 按钮，所选图片将被复制到 `dest_folder`，并加上设定的 `prefix` 作为文件名前缀。
+  - 为两个类别分别执行一次（正类设 `prefix='1'`，负类设 `prefix='0'`）。
+  - 支持懒加载，滚动到底部会继续加载后续图片（`load_step` 默认为 30）。
+
+3) 可选分类与统计：
+
+```
+python label_classification.py
+```
+
+- 在 `label_classification.py` 的 `main()` 中保持或修改：
+
+```
+source_folder = 'labelImage'
+prefix_0 = '0'
+prefix_1 = '1'
+```
+
+- 脚本会统计 `labelImage/` 内以 `0_` 与 `1_` 开头的文件数量，并复制到 `labelImage/label_0` 与 `labelImage/label_1` 子目录。
+- 如果你希望与 `main.py` 的默认评估路径（项目根目录的 `label_0/` 与 `label_1/`）一致，可选择以下任一方案：
+  - 方案 1：将 `labelImage/label_0` 与 `labelImage/label_1` 复制或移动到项目根目录。
+  - 方案 2：在 `main.py` 中把评估路径改为 `test_folder_path = 'labelImage/label_1'` 与 `test_folder_path = 'labelImage/label_0'`。
 
 ---
 
