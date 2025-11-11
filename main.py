@@ -246,7 +246,7 @@ def main():
     X, Y = load_images_from_folder(folder_path)
     X = X / 255.0
     Y = Y.reshape(-1, 1)
-    num_iterations = 180
+    num_iterations = 1800
     learning_rate = 0.1
     train_ratio = 0.7
 
